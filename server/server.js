@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-
+const { ObjectID } = require("mongodb");
 // Db info
 const { mongoose } = require("./db/mongoose");
 
@@ -40,6 +40,17 @@ app.get("/todos", (req, res) => {
         res.status(400).send(err);
     });
 });
+
+app.get("/todos/:id", (req, res) => {
+    if(!ObjectID.isValid(req.params.id)){
+        res.status(404).send('Id was formatted incorrectly')
+    }
+    Todo.findById(req.params.id).then( todo => {
+        if(!todo)  return res.send("Id not found");
+        res.send(todo);
+    }).catch( err => res.status(404).send("ObjectID not valid"));
+});
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
