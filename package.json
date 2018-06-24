@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": "8.11.1"
+  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.3",
