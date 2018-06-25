@@ -17,6 +17,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+// TODOS
 // Set up post route
 app.post("/todos", (req, res) => {
   let todo = new Todo({
@@ -102,10 +103,32 @@ app.patch("/todos/:id", (req, res) => {
   )
     .then(todo => {
       if (!todo) res.status(404).send("Id not found");
-      res.send({todo});
+      res.send({ todo });
     })
     .catch(err => res.status(404).send("Id was badly formatted"));
 });
+
+//USERS
+
+app.post("/users", (req, res) => {
+  userBody = _.pick(req.body, ["email", "password"]);
+  let user = new User(userBody);
+  user
+    .save()
+    .then( () => {
+      return user.generateAuthToken();
+    }).then( token => {
+        res.header('x-auth', token).send(user);
+    })
+    .catch(err => res.status(400).send("SOmething went wrong " + err));
+});
+
+// app.get("/users", (req, res) => {
+//     User.find().then( user => {
+//         if(!user) return res.status(404).send("Users not found");
+//         res.send({todo});
+//     }).catch( err => res.status(404).send("something wrong happened"));
+// });
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
