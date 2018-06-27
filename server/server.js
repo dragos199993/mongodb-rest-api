@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const _ = require("lodash");
-
 const { ObjectID } = require("mongodb");
 // Db info
 const { mongoose } = require("./db/mongoose");
