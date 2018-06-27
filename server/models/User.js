@@ -54,13 +54,13 @@ UserSchema.methods.toJSON = function() {
 
 UserSchema.statics.findByCredentials = function(email, password) {
   var user = this;
-  return user.findOne({email}).then( user => {
-    if(!user) return Promise.reject();
-    return new Promise( (resolved, reject) => {
-      bcrypt.compare(password, user.password, ( err, res ) => {
-        if(res) resolved(user);
+  return user.findOne({ email }).then(user => {
+    if (!user) return Promise.reject();
+    return new Promise((resolved, reject) => {
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) resolved(user);
         else reject();
-      })
+      });
     });
   });
 };
@@ -77,6 +77,15 @@ UserSchema.statics.findByToken = function(token) {
     _id: decoded._id,
     "tokens.token": token,
     "tokens.access": "auth"
+  });
+};
+
+UserSchema.methods.removeToken = function(token) {
+  let User = this;
+  return User.update({
+    $pull: {
+      tokens: { token }
+    }
   });
 };
 
