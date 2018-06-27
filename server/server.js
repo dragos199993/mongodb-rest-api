@@ -17,12 +17,6 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-
-
-app.get("/users/me", authenticate, (req, res) => {
-  res.send(req.user);
-});
-
 // TODOS
 // Set up post route
 app.post("/todos", (req, res) => {
@@ -130,6 +124,20 @@ app.post("/users", (req, res) => {
     .catch(err => res.status(400).send("SOmething went wrong " + err));
 });
 
+app.get("/users/me", authenticate, (req, res) => {
+  res.send(req.user);
+});
+
+app.post("/users/login", (req, res) => {
+  userBody = _.pick(req.body, ["email", "password"]);
+  User.findByCredentials(userBody.email, userBody.password).then( user => {
+    return user.generateAuthToken().then( token => {
+        res.header('x-auth', token).send(user);
+    });
+  }).catch( err => res.status(400).send());
+
+
+});
 // app.get("/users", (req, res) => {
 //     User.find().then( user => {
 //         if(!user) return res.status(404).send("Users not found");
