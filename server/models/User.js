@@ -41,16 +41,32 @@ UserSchema.methods.generateAuthToken = function() {
     .sign({ _id: user._id.toHexString(), access }, "changethistosecretvalue")
     .toString();
   user.tokens.push({ access, token });
-  return user.save().then( () => {
-    return token
-  })
+  return user.save().then(() => {
+    return token;
+  });
 };
 
 UserSchema.methods.toJSON = function() {
-    var user = this;
-    var userObject = user.toObject();
-    return _.pick(userObject, ['_id', 'email']);
-}
+  var user = this;
+  var userObject = user.toObject();
+  return _.pick(userObject, ["_id", "email"]);
+};
+
+UserSchema.statics.findByToken = function(token) {
+  let User = this;
+  let decoded;
+  try {
+    decoded = jwt.verify(token, "changethistosecretvalue");
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    _id: decoded._id,
+    "tokens.token": token,
+    "tokens.access": "auth"
+  });
+};
 
 const User = mongoose.model("User", UserSchema);
 

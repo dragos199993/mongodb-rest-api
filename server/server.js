@@ -9,13 +9,19 @@ const { mongoose } = require("./db/mongoose");
 // Models
 const { User } = require("./models/User");
 const { Todo } = require("./models/Todo");
-
+const { authenticate } = require("./middleware/authenticate");
 const app = express();
 
 //Check for env port
 const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+
+
+
+app.get("/users/me", authenticate, (req, res) => {
+  res.send(req.user);
+});
 
 // TODOS
 // Set up post route
@@ -115,10 +121,11 @@ app.post("/users", (req, res) => {
   let user = new User(userBody);
   user
     .save()
-    .then( () => {
+    .then(() => {
       return user.generateAuthToken();
-    }).then( token => {
-        res.header('x-auth', token).send(user);
+    })
+    .then(token => {
+      res.header("x-auth", token).send(user);
     })
     .catch(err => res.status(400).send("SOmething went wrong " + err));
 });
